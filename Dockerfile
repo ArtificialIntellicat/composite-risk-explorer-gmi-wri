@@ -9,6 +9,11 @@ ENV WEB_DOCUMENT_ROOT=/app/public
 # Projektdateien kopieren
 COPY . .
 
+# Storage- und Cache-Ordner vorbereiten
+RUN mkdir -p storage/logs bootstrap/cache \
+  && chown -R application:application storage bootstrap/cache \
+  && chmod -R 775 storage bootstrap/cache
+
 # Abhängigkeiten und Assets installieren
 RUN apk update && \
     apk add --no-cache npm git zip unzip oniguruma-dev libzip-dev libpng-dev libjpeg-turbo-dev freetype-dev mysql-client && \
