@@ -1,7 +1,6 @@
-FROM richarvey/nginx-php-fpm:php8.3
+FROM webdevops/php-nginx:8.3-alpine
 
-# Arbeitsverzeichnis setzen
-WORKDIR /var/www
+WORKDIR /app
 
 # System-Abhängigkeiten installieren
 RUN apt-get update && apt-get install -y \
