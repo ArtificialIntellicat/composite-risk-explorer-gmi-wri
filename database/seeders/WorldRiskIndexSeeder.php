@@ -57,8 +57,6 @@ class WorldRiskIndexSeeder extends Seeder
                     $score->wri_adaptive_capacity = self::floatOrNull($record['A']);
                     $score->save();
 
-                    $this->command->info("current values: score {$score->wri_score}, exposure {$score->wri_exposure}, vulnerability {$score->wri_vulnerability}, susceptibility {$score->wri_susceptibility}, coping capacity {$score->wri_coping_capacity}, adaptive capacity {$score->wri_adaptive_capacity}, for {$record['Country']} ({$iso}) in {$year}.");
-
                     $this->command->info("{$record['Country']} ({$iso}, {$year}): updated WRI values.");
                     $added++;
                 } else {
