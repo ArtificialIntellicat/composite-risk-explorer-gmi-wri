@@ -2,70 +2,103 @@
 
 **Visualizing Global Militarisation and Climate Disaster Risk**
 
-Dieses Projekt ist eine interaktive Webanwendung zur Visualisierung des Global Militarisation Index (GMI) und des World Risk Index (WRI). Nutzer:innen können Indikatoren kombinieren, per Zeitslider erkunden und die Ergebnisse auf einer Weltkarte als Choroplethenkarte betrachten.
+This project is an interactive web application for visualizing the **Global Militarisation Index (GMI)** and the **World Risk Index (WRI)**. Users can explore and combine various indicators over time and view the results on a global choropleth map.
+
+---
 
 ## 🧩 Features
 
-- Interaktive Weltkarte (Leaflet)
-- Auswahl von Indikatoren (GMI, WRI & Subindikatoren)
-- Zeitslider für historische Daten (2000–2022)
-- Dynamische Farbskalen & Popups
-- Lesbare UI mit TailwindCSS
-- Sauber strukturierter Code in Vue 3 + TypeScript
-- API-Endpunkte über Laravel bereitgestellt
+- Interactive world map with choropleth visualization
+- Combine GMI and WRI indicators by country and year
+- Time slider for historical data (2000–2022)
+- Dynamic color scales & country popups
+- Clean UI using TailwindCSS
+- Vue 3 + TypeScript frontend
+- Laravel 10 backend with MySQL database
 
 ---
 
 ## 📦 Tech Stack
 
-| Technologie      | Beschreibung                                  |
-|------------------|-----------------------------------------------|
-| **Vue 3**        | Frontend-Framework                            |
-| **TypeScript**   | Typisierung und Codequalität                  |
-| **Vite**         | Frontend-Bundler                              |
-| **Laravel 10**   | PHP-Backend / API / Routing                   |
-| **Leaflet.js**   | Kartenvisualisierung                          |
-| **TailwindCSS**  | Styling                                       |
-| **GeoJSON**      | Weltkarte mit ISO-Codes                       |
-| **SQLite**       | Datenhaltung für Länder-Indikatoren           |
+| Technology        | Description                            |
+|-------------------|----------------------------------------|
+| **Vue 3**         | Frontend framework                     |
+| **TypeScript**    | Typing & maintainable code             |
+| **Vite**          | Modern frontend bundler                |
+| **Laravel 10**    | PHP backend / API / routing            |
+| **Leaflet.js**    | Map visualization                      |
+| **TailwindCSS**   | Utility-first CSS framework            |
+| **MySQL**         | Production database                    |
+| **SQLite**        | Optional for local development         |
 
 ---
 
 ## 🚀 Quickstart
 
-### 🖥 Voraussetzungen
+### 🖥 Requirements
 
 - Node.js `>=18.x`
 - PHP `>=8.1`
 - Composer
-- SQLite
 - Git
+- MySQL (or SQLite for local dev)
 
 ---
 
-### 🔧 Setup-Anleitung
+### 🔧 Setup Guide
 
 ```bash
-# 1. Repository klonen
-git clone https://github.com/dein-benutzername/composite-risk-explorer.git
-cd composite-risk-explorer
+# 1. Clone the repository
+git clone https://github.com/ArtificialIntellicat/composite-risk-explorer-gmi-wri.git
+cd composite-risk-explorer-gmi-wri
 
-# 2. Abhängigkeiten installieren
+# 2. Install dependencies
 composer install
 npm install
 
-# 3. .env Datei einrichten
-cp .env.example .env
+# 3. Create the environment config
+cp .env.example .env.production
 php artisan key:generate
 
-# 4. Datenbank einrichten
-# -> Passe die .env an (DB_HOST, DB_DATABASE, ...)
+# 4. Configure the database
+# -> Edit .env.production for DB_CONNECTION, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+
+# 5. Run migrations & seed the database
 php artisan migrate --seed
 
-# 5. GeoJSON & Länderdaten importieren
-# (Optional: eigenen Seeder schreiben)
-php artisan import:countries
+# 6. Start the development servers
+npm run dev         # starts Vite
+php artisan serve   # starts Laravel backend
+```
 
-# 6. Dev-Server starten
-npm run dev      # Startet Vite
-php artisan serve
+---
+
+## 🗂 Data Sources
+
+- **Global Militarisation Index (GMI)**  
+  https://gmi.bicc.de/ranking-table  
+  © Bonn International Center for Conversion (BICC)
+
+- **World Risk Index (WRI)**  
+  https://www.weltrisikobericht.de  
+  © Bündnis Entwicklung Hilft & Ruhr-Universität Bochum
+
+Raw data is expected in `storage/app/data/`, such as:
+
+- `GMI-2023-all-years.xlsx`
+- `worldriskindex/` (CSV files per year, e.g. `worldriskindex-2022.csv`)
+
+Data is imported via Laravel artisan seeders.
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).  
+You are free to use, modify, and distribute it with attribution.
+
+---
+
+## ✨ Author: [@ArtificialIntellicat](https://github.com/ArtificialIntellicat)
+
+If you like this project, feel free to leave a ⭐ on GitHub!

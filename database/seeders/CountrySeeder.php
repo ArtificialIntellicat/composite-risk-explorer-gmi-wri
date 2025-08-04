@@ -23,12 +23,10 @@ class CountrySeeder extends Seeder
             $iso3   = $sheet->getCell('A'.$row)->getValue();
             $name   = $sheet->getCell('B'.$row)->getValue();
             $region = $sheet->getCell('C'.$row)->getValue();
-            $score  = (float) $sheet->getCell('H'.$row)->getValue();
-            $rank   = (int) $sheet->getCell('I'.$row)->getValue();
 
             Country::updateOrCreate(
                 ['iso_code' => $iso3],
-                ['name' => $name, 'region' => $region, 'gmi_score' => $score, 'gmi_rank' => $rank]
+                ['name' => $name, 'region' => $region]
             );
         }
     }
