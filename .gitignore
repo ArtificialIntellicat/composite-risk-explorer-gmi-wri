@@ -21,4 +21,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/database/migrations/*.php
+/database/seeders/*.php
 
