@@ -22,8 +22,10 @@ RUN mkdir -p \
     storage/framework/views \
     storage/logs \
     bootstrap/cache \
- && chown -R application:application storage bootstrap/cache \
- && chmod -R 775 storage bootstrap/cache
+    && chown -R application:application storage bootstrap/cache \
+    && find storage bootstrap/cache -type d -exec chmod 775 {} \; \
+    && find storage bootstrap/cache -type f -exec chmod 664 {} \;
+
 
 # Abhängigkeiten und Assets installieren
 RUN apk update && \
