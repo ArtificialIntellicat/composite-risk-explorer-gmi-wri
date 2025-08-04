@@ -6,13 +6,21 @@ WORKDIR /app
 
 ENV WEB_DOCUMENT_ROOT=/app/public
 
-# Projektdateien kopieren
+# Projektdateien kopieren.
 COPY . .
 
-# Storage- und Cache-Ordner vorbereiten
-RUN mkdir -p storage/logs bootstrap/cache \
-  && chown -R application:application storage bootstrap/cache \
-  && chmod -R 775 storage bootstrap/cache
+# Wichtige Laravel-Ordner anlegen und Rechte setzen
+RUN mkdir -p \
+    storage/app \
+    storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/testing \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache \
+ && chown -R application:application storage bootstrap/cache \
+ && chmod -R 775 storage bootstrap/cache
+
 
 # Abhängigkeiten und Assets installieren
 RUN apk update && \
