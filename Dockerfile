@@ -1,45 +1,47 @@
-# Basis-Image mit PHP, Composer, Node.js und MySQL-Client
-FROM laravelsail/php83-composer-node
+# Basis-Image mit PHP 8.3, Apache & Composer
+FROM php:8.3-apache
 
 # Arbeitsverzeichnis setzen
 WORKDIR /var/www/html
 
-# System-Abhängigkeiten installieren (für mysql & xlsx)
+# System-Abhängigkeiten installieren
 RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libpq-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    curl \
+    git \
+    npm \
+    nodejs \
     mysql-client \
     && docker-php-ext-install pdo pdo_mysql zip
+
+# Composer installieren
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Projektdateien kopieren
 COPY . .
 
-# Composer-Abhängigkeiten installieren
-RUN composer install --no-dev --optimize-autoloader
-
-# Frontend bauen
-RUN npm install && npm run build
+# Apache Rewrite aktivieren (für Laravel Routing)
+RUN a2enmod rewrite
 
 # Laravel vorbereiten
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+RUN composer install --no-dev --optimize-autoloader \
+ && npm install \
+ && npm run build \
+ && php artisan key:generate \
+ && php artisan config:cache \
+ && php artisan route:cache \
+ && php artisan view:cache \
+ && php artisan migrate --force \
+ && php artisan db:seed --class=CombinedDataSeeder
 
-# App-Key generieren
-RUN php artisan key:generate
+# Port öffnen
+EXPOSE 80
 
-# Migrationen und Seeder
-RUN php artisan migrate --force && \
-    php artisan db:seed --class=CombinedDataSeeder
-
-# Port für Laravel öffnen
-EXPOSE 8000
-
-# Startbefehl
-CMD php artisan serve --host=0.0.0.0 --port=8000
+# Apache starten
+CMD ["apache2-foreground"]
