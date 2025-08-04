@@ -1,19 +1,15 @@
+# Dockerfile-based deployment with Laravel, Vite and PHP
+
 services:
   - type: web
     name: composite-risk-explorer
-    runtime: node
+    runtime: docker
     repo: https://github.com/ArtificialIntellicat/composite-risk-explorer-gmi-wri
     region: frankfurt
     plan: free
     branch: main
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader
-      npm install
-      npm run build
-      php artisan key:generate
-      php artisan migrate --force
-      php artisan db:seed --class=CombinedDataSeeder
-    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     autoDeploy: true
     envVars:
       - key: APP_ENV
