@@ -1,16 +1,23 @@
+previews:
+  generation: automatic
+
 services:
   - type: web
     name: composite-risk-explorer
-    env: php
+    runtime: php
+    repo: https://github.com/ArtificialIntellicat/composite-risk-explorer-gmi-wri
     region: frankfurt
+    plan: free
+    branch: main
     buildCommand: |
       composer install --no-dev --optimize-autoloader
       npm install
       npm run build
       php artisan key:generate
       php artisan migrate --force
-      php artisan db:seed --class=CompositeRiskSeeder
+      php artisan db:seed --class=CombinedDataSeeder
     startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+    autoDeploy: true
     envVars:
       - key: APP_ENV
         value: production
@@ -20,22 +27,22 @@ services:
         generateValue: true
       - key: DB_CONNECTION
         value: mysql
-      - fromDatabase:
+      - key: DB_HOST
+        fromDatabase:
           name: composite-risk-explorer-db
           property: host
-          envVarKey: DB_HOST
-      - fromDatabase:
+      - key: DB_DATABASE
+        fromDatabase:
           name: composite-risk-explorer-db
           property: database
-          envVarKey: DB_DATABASE
-      - fromDatabase:
+      - key: DB_USERNAME
+        fromDatabase:
           name: composite-risk-explorer-db
           property: user
-          envVarKey: DB_USERNAME
-      - fromDatabase:
+      - key: DB_PASSWORD
+        fromDatabase:
           name: composite-risk-explorer-db
           property: password
-          envVarKey: DB_PASSWORD
 
 databases:
   - name: composite-risk-explorer-db
