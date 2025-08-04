@@ -6,24 +6,14 @@ WORKDIR /app
 
 ENV WEB_DOCUMENT_ROOT=/app/public
 
-# Projektdateien kopieren.
+# Projektdateien kopieren
 COPY . .
 
+# Entrypoint-Skript für Laufzeit-Setup kopieren
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# .env-Datei zur Laufzeit erzeugen aus Umgebungsvariablen
-RUN echo "APP_KEY=${APP_KEY}" > .env && \
-    echo "APP_ENV=${APP_ENV}" >> .env && \
-    echo "APP_DEBUG=${APP_DEBUG}" >> .env && \
-    echo "DB_CONNECTION=${DB_CONNECTION}" >> .env && \
-    echo "DB_HOST=${DB_HOST}" >> .env && \
-    echo "DB_PORT=${DB_PORT}" >> .env && \
-    echo "DB_DATABASE=${DB_DATABASE}" >> .env && \
-    echo "DB_USERNAME=${DB_USERNAME}" >> .env && \
-    echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
-
-# Wichtige Laravel-Ordner anlegen und Rechte setzen
+# Laravel-Verzeichnisse anlegen und Rechte setzen
 RUN mkdir -p \
     storage/app \
     storage/framework/cache \
@@ -35,7 +25,6 @@ RUN mkdir -p \
  && chown -R application:application storage bootstrap/cache \
  && chmod -R 775 storage bootstrap/cache
 
-
 # Abhängigkeiten und Assets installieren
 RUN apk update && \
     apk add --no-cache npm git zip unzip oniguruma-dev libzip-dev libpng-dev libjpeg-turbo-dev freetype-dev mysql-client && \
@@ -43,8 +32,8 @@ RUN apk update && \
     npm install && \
     npm run build
 
-# Port freigeben (Standard HTTP)
+# HTTP-Port freigeben
 EXPOSE 80
 
-# Container-Start: PHP + nginx über Supervisord
+# Start-Befehl: Laufzeit-Setup + nginx + PHP
 CMD ["/entrypoint.sh", "supervisord"]
