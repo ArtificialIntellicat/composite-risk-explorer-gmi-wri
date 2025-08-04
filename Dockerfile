@@ -4,6 +4,8 @@ FROM webdevops/php-nginx:8.3-alpine
 # Arbeitsverzeichnis setzen
 WORKDIR /app
 
+ENV WEB_DOCUMENT_ROOT=/app/public
+
 # Projektdateien kopieren
 COPY . .
 
