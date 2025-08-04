@@ -15,7 +15,8 @@
         "laravel/tinker": "^2.10.1",
         "league/csv": "^9.24",
         "phpoffice/phpspreadsheet": "^4.5",
-        "tightenco/ziggy": "^2.4"
+        "tightenco/ziggy": "^2.4",
+        "ext-pdo_sqlite": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
