@@ -113,73 +113,37 @@
       </div>
     </div>
 
-    <!-- Script for text section collapse -->
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('[data-collapse-toggle]').forEach(header => {
-          header.addEventListener('click', () => {
-            const content = header.nextElementSibling;
-            const icon = header.querySelector('svg');
-            content.classList.toggle('max-h-0');
-            content.classList.toggle('max-h-screen');
-            icon.classList.toggle('rotate-180');
-          });
-        });
-      });
-    </script>
-
     <!-- Reflections & Context -->
-     <div class="mb-4">
-    <h2 class="text-lg font-semibold mt-6 mb-2 flex items-center cursor-pointer" data-collapse-toggle>
-      <svg class="w-4 h-4 mr-2 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.7a.75.75 0 1 1 1.08 1.04l-4.25 4.25a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06z" clip-rule="evenodd"/></svg>
-      About the Global Militarisation Index (GMI)
-    </h2>
-    <div class="collapsible-content max-h-0">
+    <div class="max-w-3xl mx-auto text-gray-900 text-sm mt-10">
+
+      <!-- GMI Info -->
+      <h2 class="text-lg font-semibold mt-6 mb-2">About the Global Militarisation Index (GMI)</h2>
       <p class="mb-2">
         The GMI, published annually by the Bonn International Center for Conversion (BICC), reflects a country’s relative militarisation compared to its society. It combines data on military expenditures, personnel, and heavy weapons in relation to indicators like GDP or health spending. A high GMI score indicates that the military sector plays a disproportionately large role in a country’s resource allocation.
       </p>
       <p class="mb-6">
         <a href="https://gmi.bicc.de" target="_blank" class="text-blue-800 underline">Learn more about GMI at gmi.bicc.de ↗</a>
       </p>
-    </div>
-  </div>
 
-  <div class="mb-4">
-    <h2 class="text-lg font-semibold mt-6 mb-2 flex items-center cursor-pointer" data-collapse-toggle>
-      <svg class="w-4 h-4 mr-2 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.7a.75.75 0 1 1 1.08 1.04l-4.25 4.25a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06z" clip-rule="evenodd"/></svg>
-      About the World Risk Index (WRI)
-    </h2>
-    <div class="collapsible-content max-h-0">
+      <!-- WRI Info -->
+      <h2 class="text-lg font-semibold mt-6 mb-2">About the World Risk Index (WRI)</h2>
       <p class="mb-2">
         The WRI is published by the Bündnis Entwicklung Hilft and the Institute for International Law of Peace and Armed Conflict (IFHV) at Ruhr University Bochum. It measures the disaster risk for countries based on their exposure to natural hazards and their vulnerability, including susceptibility, coping capacity, and adaptive capacity. It is intended to support disaster risk reduction and climate adaptation planning.
       </p>
       <p class="mb-6">
         <a href="https://www.weltrisikobericht.de" target="_blank" class="text-blue-800 underline">Learn more about WRI at weltrisikobericht.de ↗</a>
       </p>
-    </div>
-  </div>
 
-     <div class="mb-4">
-    <h2 class="text-lg font-semibold mt-6 mb-2 flex items-center cursor-pointer" data-collapse-toggle>
-      <svg class="w-4 h-4 mr-2 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.7a.75.75 0 1 1 1.08 1.04l-4.25 4.25a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06z" clip-rule="evenodd"/></svg>
-      Reflections & Further Work
-    </h2>
-    <div class="collapsible-content max-h-0">
+      <!-- Reflections & Further Work -->
+      <h2 class="text-lg font-semibold mt-6 mb-2">Reflections & Further Work</h2>
       <p class="mb-3">This project combines different global indicators to explore composite vulnerability profiles. It’s important to note that the <strong>Mercator projection</strong> distorts geographic proportions — for example, countries near the poles appear larger. A future update might explore alternative, more realistic map projections.</p>
       <p class="mb-3">This tool currently visualizes historical data, but in the future, one could apply <strong>machine learning models</strong> to make forecasts about militarisation or climate risk under different scenarios. These projections would remain speculative and rely on underlying assumptions and data quality.</p>
       <p class="mb-3">The combination logic here is based on <strong>normalized summation</strong>. There may be other meaningful ways to weight or cluster indicators, such as using <strong>principal component analysis (PCA)</strong> or <strong>unsupervised clustering</strong> to identify country typologies. PCA helps reduce dimensionality by identifying underlying patterns across indicators, while clustering (e.g., k-Means) groups countries with similar vulnerability-militarisation profiles — which could be visualized or used to inform policy insights.</p>
       <p class="mb-3">Accessibility improvements are also a future goal. While the current interface uses semantic HTML and simple controls, future work will include keyboard navigation support, ARIA landmarks, screen reader compatibility, and color palettes suitable for users with <strong>color vision deficiency</strong>. This could be achieved through contrast-friendly palettes or visual textures in the map.</p>
       <p class="mb-6">The application is not yet fully <strong>responsive</strong>, which limits usability on mobile devices. Improving layout adaptability for smaller screens and touch interaction is a priority in the next iteration.</p>
-    </div>
-  </div>
 
-  <!-- Tech Stack & Repo -->
-  <div class="mb-4">
-    <h2 class="text-lg font-semibold mt-6 mb-2 flex items-center cursor-pointer" data-collapse-toggle>
-      <svg class="w-4 h-4 mr-2 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.7a.75.75 0 1 1 1.08 1.04l-4.25 4.25a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06z" clip-rule="evenodd"/></svg>
-      Tech Stack & Repository
-    </h2>
-    <div class="collapsible-content max-h-0">
+      <!-- Tech Stack & Repo -->
+      <h2 class="text-lg font-semibold mt-6 mb-2">Tech Stack & Repository</h2>
       <p class="mb-2">This fullstack web app was built with <strong>Laravel (PHP)</strong> and <strong>Vue.js (Vite, TypeScript)</strong>, using <strong>Inertia.js</strong> to bridge backend and frontend. Interactive geospatial visualization was implemented using <strong>Leaflet.js</strong>. Data is served from a local SQLite database. Tailwind CSS powers the UI styling.</p>
       <p class="mb-2">During deployment on <strong>Heroku</strong>, special attention was paid to runtime stability, asset path resolution, and request proxy headers. Environment-specific adjustments were made to ensure the app remains accessible after build without database failures.</p>
       <p class="mb-2">The application was developed with a strong focus on open data integration, intuitive interaction, and modular design. Based on the BICC’s work on militarisation and the WRI’s climate risk research, the tool creates space for both academic and public engagement.</p>
@@ -187,7 +151,6 @@
         GitHub Repository: <a href="https://github.com/ArtificialIntellicat/composite-risk-explorer-gmi-wri" target="_blank" class="text-blue-800 underline inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4 mr-1"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.612-4.042-1.612-.546-1.387-1.333-1.756-1.333-1.756-1.089-.744.084-.729.084-.729 1.205.084 1.84 1.235 1.84 1.235 1.07 1.834 2.807 1.304 3.492.997.108-.775.42-1.305.762-1.605-2.665-.305-5.466-1.333-5.466-5.931 0-1.311.468-2.382 1.236-3.222-.123-.303-.536-1.527.117-3.176 0 0 1.008-.322 3.3 1.23a11.5 11.5 0 0 1 3-.404c1.02.005 2.045.138 3 .404 2.292-1.552 3.297-1.23 3.297-1.23.655 1.649.242 2.873.12 3.176.77.84 1.234 1.911 1.234 3.222 0 4.61-2.807 5.624-5.48 5.921.431.372.816 1.102.816 2.222 0 1.606-.015 2.898-.015 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>ArtificialIntellicat/composite-risk-explorer-gmi-wri</a>
       </p>
     </div>
-  </div>
 
     <!-- Source attribution -->
     <p class="text-center text-gray-800 text-sm mb-6 mt-6">
@@ -387,8 +350,4 @@ onMounted(async () => {
 .country-shape {
   transition: fill 2s ease;
 }
-.collapsible-content {
-    transition: max-height 0.4s ease;
-    overflow: hidden;
-  }
 </style>
