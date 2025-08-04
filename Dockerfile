@@ -9,6 +9,9 @@ ENV WEB_DOCUMENT_ROOT=/app/public
 # Projektdateien kopieren.
 COPY . .
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # .env-Datei zur Laufzeit erzeugen aus Umgebungsvariablen
 RUN echo "APP_KEY=${APP_KEY}" > .env && \
     echo "APP_ENV=${APP_ENV}" >> .env && \
@@ -19,7 +22,7 @@ RUN echo "APP_KEY=${APP_KEY}" > .env && \
     echo "DB_DATABASE=${DB_DATABASE}" >> .env && \
     echo "DB_USERNAME=${DB_USERNAME}" >> .env && \
     echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
-    
+
 # Wichtige Laravel-Ordner anlegen und Rechte setzen
 RUN mkdir -p \
     storage/app \
@@ -44,4 +47,4 @@ RUN apk update && \
 EXPOSE 80
 
 # Container-Start: PHP + nginx über Supervisord
-CMD ["supervisord"]
+CMD ["/entrypoint.sh", "supervisord"]
