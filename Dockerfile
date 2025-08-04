@@ -1,8 +1,7 @@
-# Basis-Image mit PHP 8.3, Apache & Composer
-FROM php:8.3-apache
+FROM richarvey/nginx-php-fpm:php8.3
 
 # Arbeitsverzeichnis setzen
-WORKDIR /var/www/html
+WORKDIR /var/www
 
 # System-Abhängigkeiten installieren
 RUN apt-get update && apt-get install -y \
