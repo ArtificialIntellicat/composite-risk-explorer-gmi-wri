@@ -23,25 +23,28 @@ services:
       - key: APP_KEY
         generateValue: true
       - key: DB_CONNECTION
-        value: mysql
+        value: pgsql
       - key: DB_HOST
         fromDatabase:
-          name: composite-risk-explorer-db
-          property: host
+            name: composite-risk-explorer-db
+            property: host
+      - key: DB_PORT
+        value: 5432
       - key: DB_DATABASE
         fromDatabase:
-          name: composite-risk-explorer-db
-          property: database
+            name: composite-risk-explorer-db
+            property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: composite-risk-explorer-db
-          property: user
+            name: composite-risk-explorer-db
+            property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: composite-risk-explorer-db
-          property: password
+            name: composite-risk-explorer-db
+            property: password
 
 databases:
   - name: composite-risk-explorer-db
     databaseName: composite
     user: explorer
+    ipAllowList: []
