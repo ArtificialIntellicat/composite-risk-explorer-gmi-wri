@@ -1,45 +1,33 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace Database\Seeders;
 
-return new class extends Migration
+use App\Models\Country;
+use Illuminate\Database\Seeder;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
+class CountrySeeder extends Seeder
 {
-    public function up(): void
+    public function run()
     {
-        Schema::create('countries', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('iso_code', 3)->unique();
-            $table->string('region')->nullable();
-            $table->timestamps();
-        });
+        $file = storage_path('app/data/GMI-2023-all-years.xlsx');
+        $spreadsheet = IOFactory::load($file);
+        $sheet = $spreadsheet->getSheetByName('GMI Data');
 
-        Schema::create('country_scores', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('country_id')->constrained()->onDelete('cascade');
-            $table->year('year');
-            $table->float('gmi_score')->nullable();
-            $table->integer('gmi_rank')->nullable();
-            $table->float('milex_indicator')->nullable();
-            $table->float('personnel_indicator')->nullable();
-            $table->float('weapons_indicator')->nullable();
-            $table->float('wri_score')->nullable();
-            $table->float('wri_exposure')->nullable();
-            $table->float('wri_vulnerability')->nullable();
-            $table->float('wri_susceptibility')->nullable();
-            $table->float('wri_coping_capacity')->nullable();
-            $table->float('wri_adaptive_capacity')->nullable();
-            $table->timestamps();
+        $highestRow = $sheet->getHighestRow();
+        for ($row = 2; $row <= $highestRow; $row++) {
+            $year = (int) $sheet->getCell('D'.$row)->getValue();
+            if ($year !== 2022) {
+                continue; // nur aktuellster Jahrgang
+            }
+            $iso3   = $sheet->getCell('A'.$row)->getValue();
+            $name   = $sheet->getCell('B'.$row)->getValue();
+            $region = $sheet->getCell('C'.$row)->getValue();
 
-            $table->unique(['country_id', 'year']);
-        });
+            Country::updateOrCreate(
+                ['iso_code' => $iso3],
+                ['name' => $name, 'region' => $region]
+            );
+        }
     }
-
-    public function down(): void
-    {
-        Schema::dropIfExists('country_scores');
-        Schema::dropIfExists('countries');
-    }
-};
+}
