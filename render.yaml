@@ -7,7 +7,6 @@ services:
     runtime: node
     repo: https://github.com/ArtificialIntellicat/composite-risk-explorer-gmi-wri
     region: frankfurt
-    plan: free
     branch: main
     buildCommand: |
       composer install --no-dev --optimize-autoloader
