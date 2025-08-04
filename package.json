@@ -11,6 +11,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
+        "@types/leaflet": "^1.9.20",
         "@types/node": "^22.13.5",
         "@vue/eslint-config-typescript": "^14.3.0",
         "eslint": "^9.17.0",
@@ -31,14 +32,18 @@
         "clsx": "^2.1.1",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^2.0.0",
+        "leaflet": "^1.9.4",
+        "leaflet.vectorgrid": "^1.3.0",
         "lucide-vue-next": "^0.468.0",
         "reka-ui": "^2.2.0",
         "tailwind-merge": "^3.2.0",
         "tailwindcss": "^4.1.1",
+        "topojson-client": "^3.1.0",
         "tw-animate-css": "^1.2.5",
         "typescript": "^5.2.2",
         "vite": "^7.0.4",
         "vue": "^3.5.13",
+        "world-atlas": "^2.0.2",
         "ziggy-js": "^2.4.2"
     },
     "optionalDependencies": {

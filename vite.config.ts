@@ -4,6 +4,11 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    server: {
+        proxy: {
+        '/api': 'http://localhost:8000',
+        },
+    },
     plugins: [
         laravel({
             input: ['resources/js/app.ts'],
