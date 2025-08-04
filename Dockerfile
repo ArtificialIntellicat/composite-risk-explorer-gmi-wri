@@ -1,45 +1,21 @@
+# Basis-Image mit PHP 8.3, Composer, nginx, Node.js und Alpine-Linux
 FROM webdevops/php-nginx:8.3-alpine
 
+# Arbeitsverzeichnis setzen
 WORKDIR /app
-
-# System-Abhängigkeiten installieren
-RUN apt-get update && apt-get install -y \
-    unzip \
-    libzip-dev \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    curl \
-    git \
-    npm \
-    nodejs \
-    mysql-client \
-    && docker-php-ext-install pdo pdo_mysql zip
-
-# Composer installieren
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Projektdateien kopieren
 COPY . .
 
-# Apache Rewrite aktivieren (für Laravel Routing)
-RUN a2enmod rewrite
+# Abhängigkeiten und Assets installieren
+RUN apk update && \
+    apk add --no-cache npm git zip unzip oniguruma-dev libzip-dev libpng-dev libjpeg-turbo-dev freetype-dev mysql-client && \
+    composer install --no-dev --optimize-autoloader && \
+    npm install && \
+    npm run build
 
-# Laravel vorbereiten
-RUN composer install --no-dev --optimize-autoloader \
- && npm install \
- && npm run build \
- && php artisan key:generate \
- && php artisan config:cache \
- && php artisan route:cache \
- && php artisan view:cache \
- && php artisan migrate --force \
- && php artisan db:seed --class=CombinedDataSeeder
-
-# Port öffnen
+# Port freigeben (Standard HTTP)
 EXPOSE 80
 
-# Apache starten
-CMD ["apache2-foreground"]
+# Container-Start: PHP + nginx über Supervisord
+CMD ["supervisord"]
