@@ -25,3 +25,8 @@ yarn-error.log
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
+
+# Track ML predictions JSON only
+!/storage/
+!/storage/app/
+!/storage/app/predictions.json
