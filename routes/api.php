@@ -4,10 +4,13 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\CountryController;
 use App\Models\Country;
+use App\Http\Controllers\MapDataController;
 
 Route::get('/countries', [CountryController::class, 'index']);
 
 Route::get('/countries-with-score', [CountryController::class, 'countriesWithScore']);
+
+Route::get('/map-data', [MapDataController::class, 'forYear']);
 
 Route::get('/countries/year/{year}', function ($year) {
     $countries = Country::with(['scores' => function ($query) use ($year) {
