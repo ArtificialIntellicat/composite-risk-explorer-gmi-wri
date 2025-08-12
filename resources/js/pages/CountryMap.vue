@@ -3,7 +3,7 @@
   <div class="bg-white shadow-lg max-w-4xl mx-auto p-6 mt-6 rounded-md text-[14px]">
     <!-- Title and Description -->
     <h1 class="text-2xl font-bold text-center mb-3 text-gray-800">
-      Composite Risk Explorer: Global Militarisation & Climate Hazards
+      Composite Risk Explorer: Global Militarisation & Climate Hazards (test redeploy)
     </h1>
     <p class="text-center text-gray-800 text-sm mb-6">
       This interactive map allows you to combine indicators from the <strong>Global Militarisation Index (GMI)</strong> and the <strong>World Risk Index (WRI)</strong> by country and year. <br>
