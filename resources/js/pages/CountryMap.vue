@@ -21,15 +21,7 @@
       >
         {{ selectedYear }}
       </div>
-      <input
-        id="yearRange"
-        type="range"
-        min="2000"
-        max="2022"
-        v-model="selectedYear"
-        @input="refreshMap"
-        class="w-full z-10 relative"
-      />
+      <input id="yearRange" type="range" :min="MIN_YEAR" :max="MAX_YEAR" v-model="selectedYear" @input="refreshMap" class="w-full z-10 relative" />
       <div class="absolute top-full left-0 w-full flex justify-between text-xs text-gray-700 -mt-1 pointer-events-none">
         <span v-for="year in years" :key="year" class="w-0 text-center">
           {{ year % 5 === 0 ? year : '' }}
@@ -165,12 +157,14 @@ import { ref, onMounted, computed } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-const selectedYear = ref(2022)
+const MIN_YEAR = 2000
+const LAST_ACTUAL_YEAR = 2022
+const MAX_YEAR = 2050
 const activeIndicators = ref(['gmi_score']) // GMI is active by default
-const years = Array.from({ length: 2023 - 2000 }, (_, i) => 2000 + i)
-
+const selectedYear = ref(LAST_ACTUAL_YEAR)
+const years = Array.from({ length: (MAX_YEAR + 1) - MIN_YEAR }, (_, i) => MIN_YEAR + i)
 const yearBubbleLeft = computed(() => {
-  const percentage = ((selectedYear.value - 2000) / (2022 - 2000)) * 100
+  const percentage = ((selectedYear.value - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100
   return `calc(${percentage}% - 1.5rem)`
 })
 
@@ -276,19 +270,25 @@ function getColor(score) {
 
 async function refreshMap() {
   try {
-    const res = await fetch(`/api/countries/year/${selectedYear.value}`)
-    const countries = await res.json()
+    const metrics = activeIndicators.value.join(',')
+    const res = await fetch(`/api/map-data?year=${selectedYear.value}&metrics=${metrics}`)
+    const rows = await res.json()
 
+    // rows: [{ iso3, name, year, source, <metric>... }]
     const indicatorMatrix = {}
     activeIndicators.value.forEach(ind => {
-      indicatorMatrix[ind] = normalize(Object.fromEntries(countries.map(c => [c.iso_code, c[ind]])))
+      const perIso = {}
+      rows.forEach(r => {
+        const iso = r.iso3?.toUpperCase()
+        perIso[iso] = (typeof r[ind] === 'number') ? r[ind] : null
+      })
+      indicatorMatrix[ind] = normalize(perIso)
     })
 
     countryData = {}
-    countries.forEach(c => {
-      const iso = c.iso_code?.toUpperCase()
+    rows.forEach(r => {
+      const iso = r.iso3?.toUpperCase()
       if (!iso) return
-
       if (activeIndicators.value.length === 0) {
         countryData[iso] = null
       } else {
@@ -314,12 +314,7 @@ async function refreshMap() {
         style: feature => {
           const iso = feature.properties.ADM0_A3
           const val = countryData[iso]
-          return {
-            fillColor: getColor(val),
-            weight: 1,
-            color: '#555',
-            fillOpacity: 0.7
-          }
+          return { fillColor: getColor(val), weight: 1, color: '#555', fillOpacity: 0.7 }
         },
         onEachFeature: (feature, layer) => {
           const iso = feature.properties.ADM0_A3
