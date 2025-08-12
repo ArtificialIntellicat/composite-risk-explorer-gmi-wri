@@ -229,6 +229,7 @@ let map = null
 let countrySource = {} // iso3 -> 'actual' | 'predicted'
 let geoLayer = null
 let countryData = {}
+let rowByIso = {}
 const ACTUAL_COLORS = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C'] // reds for actual values
 const PREDICTED_COLORS = ['#08306B', '#08519C', '#2171B5', '#4292C6', '#6BAED6'] // blues for predicted values
 function currentPalette() {
@@ -280,6 +281,20 @@ function getColor(score) {
   return colorRanges.value[colorRanges.value.length - 1].color
 }
 
+function ciLine(iso) {
+  if (selectedYear.value <= LAST_ACTUAL_YEAR) return ''
+  const metric = activeIndicators.value.length === 1 ? activeIndicators.value[0] : null
+  if (!metric) return ''
+  const r = rowByIso[iso]
+  if (!r) return ''
+  const lo = r[`${metric}_lo_ci`]
+  const hi = r[`${metric}_hi_ci`]
+  if (typeof lo === 'number' && typeof hi === 'number') {
+    return `<br>CI (${metric}): ${lo.toFixed(2)} … ${hi.toFixed(2)}`
+  }
+  return ''
+}
+
 async function refreshMap() {
   try {
     const metrics = activeIndicators.value.join(',')
@@ -291,6 +306,13 @@ async function refreshMap() {
       const iso = r.iso3?.toUpperCase()
       if (!iso) return
       countrySource[iso] = r.source || (selectedYear.value > LAST_ACTUAL_YEAR ? 'predicted' : 'actual')
+    })
+
+    rowByIso = {}
+    rows.forEach(r => {
+      const iso = r.iso3?.toUpperCase()
+      if (!iso) return
+      rowByIso[iso] = r
     })
 
     // rows: [{ iso3, name, year, source, <metric>... }]
@@ -328,7 +350,8 @@ async function refreshMap() {
         layer.bindPopup(
           `<strong>${layer.feature.properties.ADMIN}</strong>` +
           `<br>Score (${selectedYear.value}): ${val?.toFixed(2) ?? 'no data'}` +
-          `<br>Source: ${countrySource[iso] ?? (selectedYear.value > LAST_ACTUAL_YEAR ? 'predicted' : 'actual')}`
+          `<br>Source: ${countrySource[iso] ?? (selectedYear.value > LAST_ACTUAL_YEAR ? 'predicted' : 'actual')}` +
+          ciLine(iso)
         )
       })
     } else {
@@ -345,7 +368,8 @@ async function refreshMap() {
           layer.bindPopup(
             `<strong>${layer.feature.properties.ADMIN}</strong>` +
             `<br>Score (${selectedYear.value}): ${val?.toFixed(2) ?? 'no data'}` +
-            `<br>Source: ${countrySource[iso] ?? (selectedYear.value > LAST_ACTUAL_YEAR ? 'predicted' : 'actual')}`
+            `<br>Source: ${countrySource[iso] ?? (selectedYear.value > LAST_ACTUAL_YEAR ? 'predicted' : 'actual')}` +
+            ciLine(iso)
           )
         }
       }).addTo(map)
