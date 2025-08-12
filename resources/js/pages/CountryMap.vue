@@ -3,7 +3,7 @@
   <div class="bg-white shadow-lg max-w-4xl mx-auto p-6 mt-6 rounded-md text-[14px]">
     <!-- Title and Description -->
     <h1 class="text-2xl font-bold text-center mb-3 text-gray-800">
-      Composite Risk Explorer: Global Militarisation & Climate Hazards (test redeploy)
+      Composite Risk Explorer: Global Militarisation & Climate Hazards
     </h1>
     <p class="text-center text-gray-800 text-sm mb-6">
       This interactive map allows you to combine indicators from the <strong>Global Militarisation Index (GMI)</strong> and the <strong>World Risk Index (WRI)</strong> by country and year. <br>
@@ -98,10 +98,15 @@
     <div id="map" style="height: 600px; margin-top: 2rem;"></div>
 
     <!-- Color legend -->
-    <div class="flex justify-center mt-6 space-x-4 text-sm text-gray-800">
-      <div v-for="(range, idx) in colorRanges" :key="idx" class="flex items-center space-x-1">
-        <div :style="{ backgroundColor: range.color }" class="w-5 h-3 border border-gray-300"></div>
-        <span>{{ range.label }}</span>
+    <div class="flex flex-col items-center mt-6 text-sm text-gray-800">
+      <div class="mb-2 font-medium" :class="selectedYear > LAST_ACTUAL_YEAR ? 'text-blue-800' : 'text-amber-800'">
+        {{ selectedYear > LAST_ACTUAL_YEAR ? 'Predicted (2023–2050)' : 'Observed (≤2022)' }}
+      </div>
+      <div class="flex justify-center space-x-4">
+        <div v-for="(range, idx) in colorRanges" :key="idx" class="flex items-center space-x-1">
+          <div :style="{ backgroundColor: range.color }" class="w-5 h-3 border border-gray-300"></div>
+          <span>{{ range.label }}</span>
+        </div>
       </div>
     </div>
 
@@ -221,9 +226,14 @@ function onSubToggle(group) {
 }
 
 let map = null
+let countrySource = {} // iso3 -> 'actual' | 'predicted'
 let geoLayer = null
 let countryData = {}
-const colorRange = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C']
+const ACTUAL_COLORS = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C'] // reds for actual values
+const PREDICTED_COLORS = ['#08306B', '#08519C', '#2171B5', '#4292C6', '#6BAED6'] // blues for predicted values
+function currentPalette() {
+  return selectedYear.value > LAST_ACTUAL_YEAR ? PREDICTED_COLORS : ACTUAL_COLORS
+}
 const colorRanges = ref([])
 
 function normalize(values) {
@@ -249,15 +259,17 @@ function generateColorRanges() {
   if (!all.length) return
   all.sort((a, b) => a - b)
   const thresholds = [0.2, 0.4, 0.6, 0.8].map(p => all[Math.floor(p * all.length)])
+  const palette = currentPalette()
   colorRanges.value = [
-    { color: colorRange[0], label: 'Top 20%', threshold: thresholds[3] },
-    { color: colorRange[1], label: '60–80%', threshold: thresholds[2] },
-    { color: colorRange[2], label: '40–60%', threshold: thresholds[1] },
-    { color: colorRange[3], label: '20–40%', threshold: thresholds[0] },
-    { color: colorRange[4], label: 'Bottom 20%', threshold: -Infinity },
+    { color: palette[0], label: 'Top 20%', threshold: thresholds[3] },
+    { color: palette[1], label: '60–80%', threshold: thresholds[2] },
+    { color: palette[2], label: '40–60%', threshold: thresholds[1] },
+    { color: palette[3], label: '20–40%', threshold: thresholds[0] },
+    { color: palette[4], label: 'Bottom 20%', threshold: -Infinity },
     { color: '#ddd', label: 'no data available', threshold: null }
   ]
 }
+
 
 function getColor(score) {
   if (score == null) return '#ddd'
@@ -273,6 +285,13 @@ async function refreshMap() {
     const metrics = activeIndicators.value.join(',')
     const res = await fetch(`/api/map-data?year=${selectedYear.value}&metrics=${metrics}`)
     const rows = await res.json()
+
+    countrySource = {}
+    rows.forEach(r => {
+      const iso = r.iso3?.toUpperCase()
+      if (!iso) return
+      countrySource[iso] = r.source || (selectedYear.value > LAST_ACTUAL_YEAR ? 'predicted' : 'actual')
+    })
 
     // rows: [{ iso3, name, year, source, <metric>... }]
     const indicatorMatrix = {}
@@ -306,7 +325,11 @@ async function refreshMap() {
         const iso = layer.feature.properties.ADM0_A3
         const val = countryData[iso]
         layer.setStyle({ fillColor: getColor(val) })
-        layer.bindPopup(`<strong>${layer.feature.properties.ADMIN}</strong><br>Score (${selectedYear.value}): ${val?.toFixed(2) ?? 'no data'}`)
+        layer.bindPopup(
+          `<strong>${layer.feature.properties.ADMIN}</strong>` +
+          `<br>Score (${selectedYear.value}): ${val?.toFixed(2) ?? 'no data'}` +
+          `<br>Source: ${countrySource[iso] ?? (selectedYear.value > LAST_ACTUAL_YEAR ? 'predicted' : 'actual')}`
+        )
       })
     } else {
       const geojson = await fetch('/geo/ne_countries.geojson').then(r => r.json())
@@ -319,7 +342,11 @@ async function refreshMap() {
         onEachFeature: (feature, layer) => {
           const iso = feature.properties.ADM0_A3
           const val = countryData[iso]
-          layer.bindPopup(`<strong>${feature.properties.ADMIN}</strong><br>Score (${selectedYear.value}): ${val?.toFixed(2) ?? 'no data'}`)
+          layer.bindPopup(
+            `<strong>${layer.feature.properties.ADMIN}</strong>` +
+            `<br>Score (${selectedYear.value}): ${val?.toFixed(2) ?? 'no data'}` +
+            `<br>Source: ${countrySource[iso] ?? (selectedYear.value > LAST_ACTUAL_YEAR ? 'predicted' : 'actual')}`
+          )
         }
       }).addTo(map)
     }
