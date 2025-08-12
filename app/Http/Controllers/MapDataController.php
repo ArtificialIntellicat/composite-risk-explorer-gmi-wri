@@ -37,25 +37,28 @@ class MapDataController extends Controller
 
         // 2) Prognosen laden (nur für Jahre > 2022)
         $pred = [];
-        if ($year > $LAST_ACTUAL_YEAR && Storage::exists('predictions.json')) {
-            $json = json_decode(Storage::get('predictions.json'), true) ?? [];
-            foreach ($json as $p) {
-                if ((int)($p['year'] ?? 0) !== $year) continue;
-                if (!in_array($p['metric'] ?? '', $metrics, true)) continue;
-                $iso = strtoupper((string)($p['iso3'] ?? ''));
-                if (!$iso) continue;
+        if ($year > $LAST_ACTUAL_YEAR) {
+            $predPath = storage_path('app/predictions.json');
+            if (is_file($predPath)) {
+                $json = json_decode(file_get_contents($predPath), true) ?? [];
+                foreach ($json as $p) {
+                    if ((int)($p['year'] ?? 0) !== $year) continue;
+                    if (!in_array($p['metric'] ?? '', $metrics, true)) continue;
+                    $iso = strtoupper((string)($p['iso3'] ?? ''));
+                    if (!$iso) continue;
 
-                $pred[$iso] ??= [
-                    'iso3'    => $iso,
-                    'name'    => $actual[$iso]['name'] ?? null,
-                    'year'    => $year,
-                    'source'  => 'predicted',
-                    'method'  => $p['method'] ?? null,
-                    'version' => $p['version'] ?? null,
-                ];
-                $pred[$iso][$p['metric']] = $p['value'] ?? null;
-                $pred[$iso][$p['metric'].'_lo_ci'] = $p['lo_ci'] ?? null;
-                $pred[$iso][$p['metric'].'_hi_ci'] = $p['hi_ci'] ?? null;
+                    $pred[$iso] ??= [
+                        'iso3'    => $iso,
+                        'name'    => $actual[$iso]['name'] ?? null,
+                        'year'    => $year,
+                        'source'  => 'predicted',
+                        'method'  => $p['method'] ?? null,
+                        'version' => $p['version'] ?? null,
+                    ];
+                    $pred[$iso][$p['metric']] = $p['value'] ?? null;
+                    $pred[$iso][$p['metric'].'_lo_ci'] = $p['lo_ci'] ?? null;
+                    $pred[$iso][$p['metric'].'_hi_ci'] = $p['hi_ci'] ?? null;
+                }
             }
         }
 
