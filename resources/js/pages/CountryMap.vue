@@ -241,16 +241,22 @@
         </div>
       </details>
 
-      <!-- Limitations -->
+       <!-- Limitations -->
       <details id="limitations" class="group">
         <summary class="cursor-pointer text-lg font-semibold text-gray-800 flex items-center">
-          <span class="mr-2">Limitations & next steps</span>
+          <span class="mr-2">Limitations &amp; next steps</span>
           <span class="ml-auto text-gray-500 group-open:rotate-90 transition-transform">▸</span>
         </summary>
         <div class="mt-2">
           <p class="mb-2">
             Forecasts are straight extrapolations; they do not encode scenarios or policy shocks. Residual-based CIs are indicative only.
             The map uses the Mercator projection, which exaggerates area near the poles.
+          </p>
+          <p class="mb-2">
+            <strong>Accessibility &amp; color-vision support.</strong> The choropleth uses monotonic, luminance-ordered ramps
+            so classes remain distinguishable under common color-vision deficiencies. Numeric quantile cutoffs in the legend
+            further help users who rely on grayscale/contrast perception. A future update could add a “High-contrast (Viridis/Inferno)”
+            toggle for even stronger separation.
           </p>
           <p class="mb-2">
             Potential upgrades: scenario-driven forecasts with exogenous drivers (e.g., GDP, emissions), hierarchical models to share strength
@@ -282,7 +288,7 @@ const MIN_YEAR = 2000
 const LAST_ACTUAL_YEAR = 2022
 const MAX_YEAR = 2050
 
-// NEW: color-blind mode flag (persisted in localStorage)
+// color-blind mode flag (persisted in localStorage)
 const colorBlindMode = ref(false)
 
 const activeIndicators = ref(['gmi_score']) // GMI is active by default
@@ -356,8 +362,8 @@ const ACTUAL_COLORS = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C'] //
 const PREDICTED_COLORS = ['#08306B', '#08519C', '#2171B5', '#4292C6', '#6BAED6'] // blues
 
 // NEW: color-blind friendly palettes (dark -> light)
-const CB_ACTUAL_COLORS = ['#a63603','#e6550d','#fd8d3c','#fdae6b','#fee6ce']  // oranges
-const CB_PREDICTED_COLORS = ['#08306B','#08519C','#2171B5','#6BAED6','#C6DBEF'] // blues (lighter tail)
+const CB_PREDICTED_COLORS = ['#440154','#3b528b','#21918c','#5ec962','#fde725']; // viridis(5)
+const CB_ACTUAL_COLORS     = ['#000004','#2c115f','#721f81','#f1605d','#fcffa4']; // inferno(5)
 
 function currentPalette() {
   const predicted = selectedYear.value > LAST_ACTUAL_YEAR
@@ -491,7 +497,7 @@ async function refreshMap() {
         style: feature => {
           const iso = feature.properties.ADM0_A3
           const val = countryData[iso]
-          return { fillColor: getColor(val), weight: 1, color: '#555', fillOpacity: 0.7 }
+          return { fillColor: getColor(val), weight: 1.25, color: '#444', fillOpacity: 0.8 }
         },
         onEachFeature: (feature, layer) => {
           const iso = feature.properties.ADM0_A3
