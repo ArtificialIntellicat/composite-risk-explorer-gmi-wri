@@ -253,10 +253,8 @@
             The map uses the Mercator projection, which exaggerates area near the poles.
           </p>
           <p class="mb-2">
-            <strong>Accessibility &amp; color-vision support.</strong> The choropleth uses monotonic, luminance-ordered ramps
-            so classes remain distinguishable under common color-vision deficiencies. Numeric quantile cutoffs in the legend
-            further help users who rely on grayscale/contrast perception. A future update could add a “High-contrast (Viridis/Inferno)”
-            toggle for even stronger separation.
+            <strong>Accessibility &amp; color-vision support.</strong> The “High-contrast (Viridis/Inferno)”
+            toggle makes sure that classes remain distinguishable under common color-vision deficiencies. An alternative would be monotonic, luminance-ordered ramps.
           </p>
           <p class="mb-2">
             Potential upgrades: scenario-driven forecasts with exogenous drivers (e.g., GDP, emissions), hierarchical models to share strength
