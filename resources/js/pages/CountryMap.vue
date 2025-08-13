@@ -514,4 +514,10 @@ onMounted(async () => {
 .country-shape {
   transition: fill 2s ease;
 }
+
+/* rotate the caret on open for all details blocks */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+.group[open] summary .group-open\:rotate-90 { transform: rotate(90deg); }
+
 </style>
