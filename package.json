@@ -11,7 +11,8 @@
     "dev": "vite",
     "format": "prettier --write resources/",
     "format:check": "prettier --check resources/",
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix",
+    "forecast": "python ml/forecast.py data/combined.csv storage/app/predictions.json --damped-trend --ci 0.95 --round 3"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
