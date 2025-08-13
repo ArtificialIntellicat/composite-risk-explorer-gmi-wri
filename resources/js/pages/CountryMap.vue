@@ -7,8 +7,8 @@
 
     <!-- Intro blurb -->
     <p class="text-center text-gray-800 text-sm mb-6">
-      This interactive map combines indicators from the <strong>Global Militarisation Index (GMI)</strong> and the
-      <strong>World Risk Index (WRI)</strong> by country and year.
+      This interactive map allows you to combine indicators from the <strong>Global Militarisation Index (GMI)</strong> and the <strong>World Risk Index (WRI)</strong> by country and year. <br>
+      You can either select one composite index or freely combine individual indicators to explore patterns of militarisation and climate disaster vulnerability. Choose your indicators and a year to see the map update in real time.
       <br>
       <span class="text-amber-800 font-medium">Observed data</span> are shown for <strong>2000–2022</strong>.
       For <strong>2023–2050</strong>, the map displays <span class="text-blue-800 font-medium">model-based forecasts</span>
@@ -114,6 +114,12 @@
           <span>{{ range.label }}</span>
         </div>
       </div>
+
+      <!-- Accessibility toggle -->
+      <div class="flex items-center justify-center gap-2 mt-2">
+        <input id="cb-mode" type="checkbox" v-model="colorBlindMode" @change="refreshMap" class="h-4 w-4">
+        <label for="cb-mode" class="text-xs text-gray-700">Color-blind friendly palette</label>
+      </div>
     </div>
 
     <!-- Collapsible content -->
@@ -156,8 +162,8 @@
         </div>
       </details>
 
-      <!-- Forecasts overview (open by default) -->
-      <details id="forecasts" class="group" open>
+      <!-- Forecasts overview -->
+      <details id="forecasts" class="group">
         <summary class="cursor-pointer text-lg font-semibold text-gray-800 flex items-center">
           <span class="mr-2">Forecasts (what changes after 2022)</span>
           <span class="ml-auto text-gray-500 group-open:rotate-90 transition-transform">▸</span>
@@ -254,9 +260,9 @@
         </div>
       </details>
 
-       <!-- Source attribution -->
+      <!-- Source attribution -->
       <p class="text-center text-gray-700 text-xs">
-        Note: Values for 2023–2050 are model-based forecasts; see <a href="#methods-forecast" class="text-blue-800 underline">Methods</a>.
+        Note: Values for 2023–2050 are model-based forecasts; see <a href="#forecasts" class="text-blue-800 underline">Forecasts</a>.
       </p>
       <p class="text-center text-gray-800 text-sm mb-6 mt-6">
         Sources: <a href="https://gmi.bicc.de/ranking-table" class="underline" target="_blank">BICC</a>,
@@ -268,13 +274,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
 const MIN_YEAR = 2000
 const LAST_ACTUAL_YEAR = 2022
 const MAX_YEAR = 2050
+
+// NEW: color-blind mode flag (persisted in localStorage)
+const colorBlindMode = ref(false)
+
 const activeIndicators = ref(['gmi_score']) // GMI is active by default
 const selectedYear = ref(LAST_ACTUAL_YEAR)
 const years = Array.from({ length: (MAX_YEAR + 1) - MIN_YEAR }, (_, i) => MIN_YEAR + i)
@@ -340,11 +350,23 @@ let countrySource = {} // iso3 -> 'actual' | 'predicted'
 let geoLayer = null
 let countryData = {}
 let rowByIso = {}
-const ACTUAL_COLORS = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C'] // reds for actual values
-const PREDICTED_COLORS = ['#08306B', '#08519C', '#2171B5', '#4292C6', '#6BAED6'] // blues for predicted values
+
+// Existing palettes (non-CB)
+const ACTUAL_COLORS = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C'] // reds
+const PREDICTED_COLORS = ['#08306B', '#08519C', '#2171B5', '#4292C6', '#6BAED6'] // blues
+
+// NEW: color-blind friendly palettes (dark -> light)
+const CB_ACTUAL_COLORS = ['#a63603','#e6550d','#fd8d3c','#fdae6b','#fee6ce']  // oranges
+const CB_PREDICTED_COLORS = ['#08306B','#08519C','#2171B5','#6BAED6','#C6DBEF'] // blues (lighter tail)
+
 function currentPalette() {
-  return selectedYear.value > LAST_ACTUAL_YEAR ? PREDICTED_COLORS : ACTUAL_COLORS
+  const predicted = selectedYear.value > LAST_ACTUAL_YEAR
+  if (colorBlindMode.value) {
+    return predicted ? CB_PREDICTED_COLORS : CB_ACTUAL_COLORS
+  }
+  return predicted ? PREDICTED_COLORS : ACTUAL_COLORS
 }
+
 const colorRanges = ref([])
 
 function normalize(values) {
@@ -380,7 +402,6 @@ function generateColorRanges() {
     { color: '#ddd', label: 'no data available', threshold: null }
   ]
 }
-
 
 function getColor(score) {
   if (score == null) return '#ddd'
@@ -490,6 +511,8 @@ async function refreshMap() {
 }
 
 onMounted(async () => {
+  // load persisted color-blind preference
+  try { colorBlindMode.value = localStorage.getItem('cbMode') === '1' } catch {}
   try {
     map = L.map('map').setView([20, 0], 2)
     L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
@@ -499,6 +522,11 @@ onMounted(async () => {
   } catch (error) {
     console.error('Error initializing map:', error)
   }
+})
+
+// persist preference
+watch(colorBlindMode, v => {
+  try { localStorage.setItem('cbMode', v ? '1' : '0') } catch {}
 })
 </script>
 
@@ -511,5 +539,4 @@ onMounted(async () => {
 details > summary { list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
 .group[open] summary .group-open\:rotate-90 { transform: rotate(90deg); }
-
 </style>
