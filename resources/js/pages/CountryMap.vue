@@ -6,8 +6,10 @@
       Composite Risk Explorer: Global Militarisation & Climate Hazards
     </h1>
     <p class="text-center text-gray-800 text-sm mb-6">
-      This interactive map allows you to combine indicators from the <strong>Global Militarisation Index (GMI)</strong> and the <strong>World Risk Index (WRI)</strong> by country and year. <br>
-      You can either select one composite index or freely combine individual indicators to explore patterns of militarisation and climate disaster vulnerability. Choose your indicators and a year to see the map update in real time.
+      This interactive map combines indicators from the <strong>Global Militarisation Index (GMI)</strong> and the <strong>World Risk Index (WRI)</strong> by country and year.
+      <br>
+      <span class="text-amber-800 font-medium">Observed data</span> are shown for <strong>2000–2022</strong>. For <strong>2023–2050</strong>, the map displays
+      <span class="text-blue-800 font-medium">model-based forecasts</span> built from each country’s historical time series (one model per country and indicator). Forecasts are produced offline and shipped as a static JSON file; details in the <a href="#methods-forecast" class="text-blue-800 underline">Methods</a> section.
     </p>
 
     <!-- Year slider label with bubble -->
@@ -131,25 +133,79 @@
         <a href="https://www.weltrisikobericht.de" target="_blank" class="text-blue-800 underline">Learn more about WRI at weltrisikobericht.de ↗</a>
       </p>
 
-      <!-- Reflections & Further Work -->
-      <h2 class="text-lg font-semibold mt-6 mb-2">Reflections & Further Work</h2>
-      <p class="mb-3">This project combines different global indicators to explore composite vulnerability profiles. It’s important to note that the <strong>Mercator projection</strong> distorts geographic proportions — for example, countries near the poles appear larger. A future update might explore alternative, more realistic map projections.</p>
-      <p class="mb-3">This tool currently visualizes historical data, but in the future, one could apply <strong>machine learning models</strong> to make forecasts about militarisation or climate risk under different scenarios. These projections would remain speculative and rely on underlying assumptions and data quality.</p>
-      <p class="mb-3">The combination logic here is based on <strong>normalized summation</strong>. There may be other meaningful ways to weight or cluster indicators, such as using <strong>principal component analysis (PCA)</strong> or <strong>unsupervised clustering</strong> to identify country typologies. PCA helps reduce dimensionality by identifying underlying patterns across indicators, while clustering (e.g., k-Means) groups countries with similar vulnerability-militarisation profiles — which could be visualized or used to inform policy insights.</p>
-      <p class="mb-3">Accessibility improvements are also a future goal. While the current interface uses semantic HTML and simple controls, future work will include keyboard navigation support, ARIA landmarks, screen reader compatibility, and color palettes suitable for users with <strong>color vision deficiency</strong>. This could be achieved through contrast-friendly palettes or visual textures in the map.</p>
-      <p class="mb-6">The application is not yet fully <strong>responsive</strong>, which limits usability on mobile devices. Improving layout adaptability for smaller screens and touch interaction is a priority in the next iteration.</p>
+      <!-- Forecasts (overview) -->
+      <h2 id="forecasts" class="text-lg font-semibold mt-6 mb-2">Forecasts (what changes after 2022)</h2>
+      <p class="mb-2">
+        For <span class="text-amber-800 font-medium">2000–2022</span> the map shows <strong>observed</strong> values (red palette). For
+        <span class="text-blue-800 font-medium">2023–2050</span> it switches to <strong>model-based forecasts</strong> (blue palette), computed
+        <em>per country and per indicator</em>. These are transparent, scenario-free extrapolations and should be interpreted with care.
+      </p>
+      <p class="mb-4 text-xs text-gray-700">
+        Serving logic: the API returns DB values for ≤2022; for &gt;2022 it reads a static file
+        <code>public/data/predictions.json</code> that is built offline and deployed with the app.
+      </p>
 
-      <!-- Tech Stack & Repo -->
-      <h2 class="text-lg font-semibold mt-6 mb-2">Tech Stack & Repository</h2>
-      <p class="mb-2">This fullstack web app was built with <strong>Laravel (PHP)</strong> and <strong>Vue.js (Vite, TypeScript)</strong>, using <strong>Inertia.js</strong> to bridge backend and frontend. Interactive geospatial visualization was implemented using <strong>Leaflet.js</strong>. Data is served from a local SQLite database. Tailwind CSS powers the UI styling.</p>
-      <p class="mb-2">During deployment on <strong>Heroku</strong>, special attention was paid to runtime stability, asset path resolution, and request proxy headers. Environment-specific adjustments were made to ensure the app remains accessible after build without database failures.</p>
-      <p class="mb-2">The application was developed with a strong focus on open data integration, intuitive interaction, and modular design. Based on the BICC’s work on militarisation and the WRI’s climate risk research, the tool creates space for both academic and public engagement.</p>
-      <p class="mb-6">
-        GitHub Repository: <a href="https://github.com/ArtificialIntellicat/composite-risk-explorer-gmi-wri" target="_blank" class="text-blue-800 underline inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4 mr-1"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.612-4.042-1.612-.546-1.387-1.333-1.756-1.333-1.756-1.089-.744.084-.729.084-.729 1.205.084 1.84 1.235 1.84 1.235 1.07 1.834 2.807 1.304 3.492.997.108-.775.42-1.305.762-1.605-2.665-.305-5.466-1.333-5.466-5.931 0-1.311.468-2.382 1.236-3.222-.123-.303-.536-1.527.117-3.176 0 0 1.008-.322 3.3 1.23a11.5 11.5 0 0 1 3-.404c1.02.005 2.045.138 3 .404 2.292-1.552 3.297-1.23 3.297-1.23.655 1.649.242 2.873.12 3.176.77.84 1.234 1.911 1.234 3.222 0 4.61-2.807 5.624-5.48 5.921.431.372.816 1.102.816 2.222 0 1.606-.015 2.898-.015 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>ArtificialIntellicat/composite-risk-explorer-gmi-wri</a>
+      <!-- Forecast pipeline – developer notes -->
+      <details id="methods-dev" class="mt-4 mb-6">
+        <summary class="cursor-pointer text-base font-semibold text-gray-800">Forecast pipeline — developer notes</summary>
+        <div class="mt-3 text-sm text-gray-900 space-y-3">
+          <p>
+            <strong>Data & scope.</strong> Annual series per <code>iso3</code> and metric (~2000–2022). Missing values are coerced to NaN and dropped. We require at least <code>min_points = 3</code> to fit a model.
+          </p>
+          <p>
+            <strong>Model.</strong> ETS (Holt–Winters) with <code>trend="add"</code>, <code>seasonal=None</code> (annual data → no seasonality),
+            <code>initialization_method="estimated"</code>, optional <code>damped_trend</code> to tame long-horizon growth. We use a yearly
+            <code>PeriodIndex</code> in pandas so <code>statsmodels</code> handles dates cleanly.
+          </p>
+          <p>
+            <strong>Uncertainty.</strong> For each forecast <em>ŷ</em>, we show a simple 95% band: <code>ŷ ± z·σ</code> with <code>z≈1.96</code> and
+            <code>σ</code> the sample std. dev. of residuals (<code>ddof=1</code>). This is residual-based only; it ignores parameter/model uncertainty and may under-/over-cover when trends shift.
+          </p>
+          <p>
+            <strong>Output.</strong> Flat JSON rows (one per iso×metric×year) with <code>value</code>, <code>lo_ci</code>, <code>hi_ci</code>, and
+            <code>method</code> (<code>ets_additive</code> or <code>ets_additive_damped</code>). Values are pre-rounded to 3 decimals.
+          </p>
+          <pre class="bg-gray-50 p-3 rounded overflow-x-auto text-xs">
+      { "iso3": "DEU", "metric": "gmi_score", "year": 2030,
+        "value": 73.579, "lo_ci": 52.599, "hi_ci": 94.558,
+        "source": "predicted", "method": "ets_additive_damped", "version": "1.0" }
+          </pre>
+          <p>
+            <strong>Why ETS?</strong> It’s lightweight, explainable, and works on short annual series. Heavier options (ARIMA/auto-ARIMA, Prophet,
+            state-space with exogenous drivers) can capture richer dynamics but add tuning cost and opaque assumptions. ETS-additive(+damped) is a practical baseline for this portfolio app.
+          </p>
+          <p>
+            <strong>Notes & quirks.</strong> Occasional AIC/BIC warnings from <code>statsmodels</code> when SSE≈0 are benign here. We don’t hard-clip forecasts to indicator bounds; noisy series can produce wide CIs. Coloring uses within-year normalization (see below), not absolute thresholds.
+          </p>
+        </div>
+      </details>
+
+      <!-- How the combined map score is computed -->
+      <h2 id="combination" class="text-lg font-semibold mt-6 mb-2">How the map score is computed</h2>
+      <p class="mb-2">
+        When you select multiple indicators, the map normalizes each indicator across countries for the selected year using
+        min-max scaling and then sums the normalized values:
+        <code class="text-xs">norm(x) = (x − min) / (max − min)</code>, then <code>score(country) = Σ<sub>selected indicators</sub> norm(value)</code>.
+        If an indicator is missing for a country, it contributes 0 to that sum. Quantile breaks (≈20% bands) drive the legend.
+      </p>
+      <p class="mb-4 text-xs text-gray-700">
+        Implication: colors are comparable <em>within</em> a year and indicator set, but not necessarily across different years or different indicator selections.
+      </p>
+
+      <!-- Limitations & next steps -->
+      <h2 id="limitations" class="text-lg font-semibold mt-6 mb-2">Limitations & next steps</h2>
+      <p class="mb-3">
+        Forecasts are straight extrapolations; they do not encode scenarios or policy shocks. Residual-based CIs are indicative only. The map uses the Mercator projection, which exaggerates area near the poles.
+      </p>
+      <p class="mb-3">
+        Potential upgrades: scenario-driven forecasts with exogenous drivers (e.g., GDP, emissions), hierarchical models to share strength across countries, bounded/monotone constraints where appropriate, rolling-origin evaluation for model choice, uncertainty that widens with horizon rather than a constant ±z·σ band, and alternative projections for fairer geography.
       </p>
     </div>
 
     <!-- Source attribution -->
+    <p class="text-center text-gray-700 text-xs">
+      Note: Values for 2023–2050 are model-based forecasts; see <a href="#methods-forecast" class="text-blue-800 underline">Methods</a>.
+    </p>
     <p class="text-center text-gray-800 text-sm mb-6 mt-6">
       Sources: <a href="https://gmi.bicc.de/ranking-table" class="underline" target="_blank">BICC</a>,
       <a href="https://www.weltrisikobericht.de" class="underline" target="_blank">WorldRiskReport</a>
