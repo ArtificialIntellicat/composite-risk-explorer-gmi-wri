@@ -254,22 +254,14 @@
         </div>
       </details>
 
-      <!-- Sources / attribution -->
-      <details id="sources" class="group">
-        <summary class="cursor-pointer text-lg font-semibold text-gray-800 flex items-center">
-          <span class="mr-2">Sources & attribution</span>
-          <span class="ml-auto text-gray-500 group-open:rotate-90 transition-transform">▸</span>
-        </summary>
-        <div class="mt-2">
-          <p class="text-gray-700 text-xs mb-2">
-            Note: Values for 2023–2050 are model-based forecasts; see the Forecasts section above.
-          </p>
-          <p class="text-gray-800 text-sm">
-            Sources: <a href="https://gmi.bicc.de/ranking-table" class="underline" target="_blank">BICC</a>,
-            <a href="https://www.weltrisikobericht.de" class="underline" target="_blank">WorldRiskReport</a>
-          </p>
-        </div>
-      </details>
+       <!-- Source attribution -->
+      <p class="text-center text-gray-700 text-xs">
+        Note: Values for 2023–2050 are model-based forecasts; see <a href="#methods-forecast" class="text-blue-800 underline">Methods</a>.
+      </p>
+      <p class="text-center text-gray-800 text-sm mb-6 mt-6">
+        Sources: <a href="https://gmi.bicc.de/ranking-table" class="underline" target="_blank">BICC</a>,
+        <a href="https://www.weltrisikobericht.de" class="underline" target="_blank">WorldRiskReport</a>
+      </p>
 
     </div>
   </div>
