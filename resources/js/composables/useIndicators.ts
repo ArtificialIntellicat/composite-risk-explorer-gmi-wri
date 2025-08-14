@@ -1,67 +1,58 @@
-// Composable for normalizing values and computing color thresholds for choropleth maps
+import { ref, computed, watch } from 'vue'
+import { MIN_YEAR, LAST_ACTUAL_YEAR, MAX_YEAR } from '../domain/constants'
+import { gmiOptions, wriOptions } from '../domain/indicators' 
 
-export interface CountryValues {
-  [isoCode: string]: number | null | undefined;
-}
-
-export interface ColorRange {
-  color: string;
-  label: string;
-  threshold: number | null;
-}
+type Group = 'gmi' | 'wri'
 
 /**
- * Normalizes values between 0 and 1.
- * If all values are equal, returns 0.5.
+ * Centralizes UI state (year, indicators, color-blind toggles) and toggle rules.
+ * Optionally call `setOnChange(cb)` so all toggle handlers auto-trigger a refresh.
  */
-export function normalize(values: CountryValues): CountryValues {
-  const valid = Object.values(values).filter((v): v is number => typeof v === 'number')
-  const min = Math.min(...valid)
-  const max = Math.max(...valid)
-  const result: CountryValues = {}
+export function useIndicators() {
+  // --- state ---
+  const selectedYear = ref<number>(LAST_ACTUAL_YEAR)
+  const activeIndicators = ref<string[]>(['gmi_score']) // default selection
 
-  for (const [key, value] of Object.entries(values)) {
-    if (typeof value !== 'number') {
-      result[key] = null
-    } else if (max === min) {
-      result[key] = 0.5
-    } else {
-      result[key] = (value - min) / (max - min)
+  const colorBlindMode = ref(false)
+  const useAltCB = ref(false) // false: Viridis/Inferno, true: Cividis/Plasma
+
+  // Optional auto-refresh callback wiring
+  let afterChange: (() => void) | undefined
+  function setOnChange(cb: () => void) { afterChange = cb }
+
+  // Persistence (localStorage)
+  try { colorBlindMode.value = localStorage.getItem('cbMode') === '1' } catch {}
+  try { useAltCB.value      = localStorage.getItem('cbAlt')  === '1' } catch {}
+
+  watch(colorBlindMode, v => { try { localStorage.setItem('cbMode', v ? '1' : '0') } catch {} })
+  watch(useAltCB,      v => { try { localStorage.setItem('cbAlt',  v ? '1' : '0') } catch {} })
+
+  // Toggle rules
+  function onMainToggle(group: Group) {
+    const mainValue = group === 'gmi' ? 'gmi_score' : 'wri_score'
+    const subOptions = group === 'gmi' ? gmiOptions : wriOptions
+
+    if (activeIndicators.value.includes(mainValue)) {
+      // If main is active, remove all sub-indicators from the same group
+      subOptions.forEach(opt => {
+        if (opt.value !== mainValue) {
+          activeIndicators.value = activeIndicators.value.filter(v => v !== opt.value)
+        }
+      })
     }
+    afterChange?.()
   }
-  return result
-}
 
-/**
- * Generates a color range legend for the choropleth map.
- * Based on percentile thresholds of values.
- */
-export function generateColorRanges(values: CountryValues): ColorRange[] {
-  const colorPalette = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C']
-  const all = Object.values(values).filter((v): v is number => typeof v === 'number')
-  if (!all.length) return []
-
-  all.sort((a, b) => a - b)
-  const thresholds = [0.2, 0.4, 0.6, 0.8].map(p => all[Math.floor(p * all.length)])
-
-  return [
-    { color: colorPalette[0], label: 'Top 20%', threshold: thresholds[3] },
-    { color: colorPalette[1], label: '60–80%', threshold: thresholds[2] },
-    { color: colorPalette[2], label: '40–60%', threshold: thresholds[1] },
-    { color: colorPalette[3], label: '20–40%', threshold: thresholds[0] },
-    { color: colorPalette[4], label: 'Bottom 20%', threshold: -Infinity },
-    { color: '#ddd', label: 'no data available', threshold: null }
-  ]
-}
-
-/**
- * Determines the color for a country value based on thresholds.
- */
-export function getColor(score: number | null | undefined, colorRanges: ColorRange[]): string {
-  if (score == null) return '#ddd'
-  for (const range of colorRanges) {
-    if (range.threshold == null) continue
-    if (score >= range.threshold) return range.color
+  function onSubToggle(group: Group) {
+    const mainValue = group === 'gmi' ? 'gmi_score' : 'wri_score'
+    if (activeIndicators.value.includes(mainValue)) {
+      // If any sub is toggled on, ensure the main checkbox is off
+      activeIndicators.value = activeIndicators.value.filter(v => v !== mainValue)
+    }
+    afterChange?.()
   }
-  return colorRanges[colorRanges.length - 1].color
+
+  return {
+  selectedYear, activeIndicators, colorBlindMode, useAltCB,
+  onMainToggle, onSubToggle, setOnChange}
 }

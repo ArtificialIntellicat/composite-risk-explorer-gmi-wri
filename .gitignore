@@ -30,3 +30,6 @@ __pycache__/
 !/storage/
 !/storage/app/
 !/storage/app/predictions.json
+
+# exclude useless Laravel & Vue Files
+/resources/js/components/useless
