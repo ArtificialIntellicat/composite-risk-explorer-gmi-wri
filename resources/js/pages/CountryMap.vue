@@ -131,6 +131,7 @@
           <span>Use <strong>Cividis/Plasma</strong> (else: Viridis/Inferno)</span>
         </label>
       </div>
+    </div>
 
     <!-- Collapsible content -->
     <div class="max-w-3xl mx-auto text-gray-900 text-sm mt-10 space-y-3">
@@ -214,9 +215,9 @@
                 <code>method</code>. Values rounded to 3 decimals.
               </p>
               <pre class="bg-gray-50 p-3 rounded overflow-x-auto text-xs">
-{ "iso3": "DEU", "metric": "gmi_score", "year": 2030,
-  "value": 73.579, "lo_ci": 52.599, "hi_ci": 94.558,
-  "source": "predicted", "method": "ets_additive_damped", "version": "1.0" }
+                { "iso3": "DEU", "metric": "gmi_score", "year": 2030,
+                  "value": 73.579, "lo_ci": 52.599, "hi_ci": 94.558,
+                  "source": "predicted", "method": "ets_additive_damped", "version": "1.0" }
               </pre>
               <p>
                 <strong>Why ETS?</strong> Lightweight and explainable on short annual series.
