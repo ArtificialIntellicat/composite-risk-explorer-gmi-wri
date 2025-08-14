@@ -8,6 +8,7 @@
 /vendor
 .env
 .env.backup
+.env.backup-2025-08-15
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
