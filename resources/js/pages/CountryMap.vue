@@ -123,13 +123,30 @@
           <span>Color-vision friendly</span>
         </label>
 
-        <!-- Toggle 2: alternative color scheme -->
-        <label class="inline-flex items-center gap-2 text-xs text-gray-700"
-              :class="!colorBlindMode ? 'opacity-50 cursor-not-allowed' : ''">
-          <input id="cb-family" type="checkbox" :disabled="!colorBlindMode"
-                v-model="useAltCB" @change="refreshMap" class="h-4 w-4">
-          <span>Use <strong>Cividis/Plasma</strong> (else: Viridis/Inferno)</span>
-        </label>
+        <!-- Toggle 2: Palettenfamilie (nur aktiv, wenn CB-Mode an ist) -->
+        <div class="flex items-center gap-2 text-xs text-gray-700"
+            :class="!colorBlindMode ? 'opacity-50 pointer-events-none' : ''"
+            :aria-disabled="!colorBlindMode">
+          <span :class="['select-none', useAltCB ? 'text-gray-500' : 'text-gray-900 font-semibold']">Viridis/Inferno</span>
+
+          <!-- switch -->
+          <button
+            type="button"
+            role="switch"
+            :aria-checked="useAltCB"
+            :tabindex="colorBlindMode ? 0 : -1"
+            @click="if(colorBlindMode){ useAltCB = !useAltCB; refreshMap() }"
+            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            :class="useAltCB ? 'bg-blue-600' : 'bg-gray-300'">
+            <span class="sr-only">Toggle color scale family</span>
+            <span
+              class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out"
+              :class="useAltCB ? 'translate-x-5' : 'translate-x-0.5'"></span>
+          </button>
+
+          <span :class="['select-none', useAltCB ? 'text-gray-900 font-semibold' : 'text-gray-500']">Cividis/Plasma</span>
+        </div>
       </div>
     </div>
 
@@ -267,8 +284,7 @@
             <strong>Accessibility &amp; color-vision support.</strong>
             A “Color-vision friendly” toggle switches the choropleth to perceptually uniform ramps.
             You can choose between two families: <em>Viridis/Inferno</em> or <em>Cividis/Plasma</em>.
-            Both provide monotonic lightness so classes remain distinguishable for common CVD types;
-            the numeric legend further supports grayscale/contrast-based interpretation.
+            Both provide monotonic lightness so classes remain distinguishable for common CVD types.
           </p>
           <p class="mb-2">
             Potential upgrades: scenario-driven forecasts with exogenous drivers (e.g., GDP, emissions), hierarchical models to share strength
