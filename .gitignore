@@ -33,3 +33,4 @@ __pycache__/
 
 # exclude useless Laravel & Vue Files
 /resources/js/components/useless
+/resources/js/pages/auth
