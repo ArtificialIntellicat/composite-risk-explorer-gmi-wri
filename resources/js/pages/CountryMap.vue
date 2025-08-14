@@ -138,7 +138,7 @@
             @click="if(colorBlindMode){ useAltCB = !useAltCB; refreshMap() }"
             class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out
                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            :class="useAltCB ? 'bg-blue-600' : 'bg-gray-300'">
+            :class="useAltCB ? 'red-400' : 'purple-400'">
             <span class="sr-only">Toggle color scale family</span>
             <span
               class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out"
