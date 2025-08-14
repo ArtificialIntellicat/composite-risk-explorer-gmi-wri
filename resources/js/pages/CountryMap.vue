@@ -115,12 +115,22 @@
         </div>
       </div>
 
-      <!-- Accessibility toggle -->
-      <div class="flex items-center justify-center gap-2 mt-2">
-        <input id="cb-mode" type="checkbox" v-model="colorBlindMode" @change="refreshMap" class="h-4 w-4">
-        <label for="cb-mode" class="text-xs text-gray-700">Color-blind friendly palette</label>
+      <!-- Accessibility toggles -->
+      <div class="flex items-center justify-center gap-4 mt-2">
+        <!-- Toggle 1: activate color-vision friendly mode -->
+        <label class="inline-flex items-center gap-2 text-xs text-gray-700">
+          <input id="cb-mode" type="checkbox" v-model="colorBlindMode" @change="refreshMap" class="h-4 w-4">
+          <span>Color-vision friendly</span>
+        </label>
+
+        <!-- Toggle 2: alternative color scheme -->
+        <label class="inline-flex items-center gap-2 text-xs text-gray-700"
+              :class="!colorBlindMode ? 'opacity-50 cursor-not-allowed' : ''">
+          <input id="cb-family" type="checkbox" :disabled="!colorBlindMode"
+                v-model="useAltCB" @change="refreshMap" class="h-4 w-4">
+          <span>Use <strong>Cividis/Plasma</strong> (else: Viridis/Inferno)</span>
+        </label>
       </div>
-    </div>
 
     <!-- Collapsible content -->
     <div class="max-w-3xl mx-auto text-gray-900 text-sm mt-10 space-y-3">
@@ -253,8 +263,11 @@
             The map uses the Mercator projection, which exaggerates area near the poles.
           </p>
           <p class="mb-2">
-            <strong>Accessibility &amp; color-vision support.</strong> The “High-contrast (Viridis/Inferno)”
-            toggle makes sure that classes remain distinguishable under common color-vision deficiencies. An alternative would be monotonic, luminance-ordered ramps.
+            <strong>Accessibility &amp; color-vision support.</strong>
+            A “Color-vision friendly” toggle switches the choropleth to perceptually uniform ramps.
+            You can choose between two families: <em>Viridis/Inferno</em> or <em>Cividis/Plasma</em>.
+            Both provide monotonic lightness so classes remain distinguishable for common CVD types;
+            the numeric legend further supports grayscale/contrast-based interpretation.
           </p>
           <p class="mb-2">
             Potential upgrades: scenario-driven forecasts with exogenous drivers (e.g., GDP, emissions), hierarchical models to share strength
@@ -288,6 +301,8 @@ const MAX_YEAR = 2050
 
 // color-blind mode flag (persisted in localStorage)
 const colorBlindMode = ref(false)
+const useAltCB = ref(false)         // false: Viridis/Inferno, true: Cividis/Plasma
+
 
 const activeIndicators = ref(['gmi_score']) // GMI is active by default
 const selectedYear = ref(LAST_ACTUAL_YEAR)
@@ -359,17 +374,27 @@ let rowByIso = {}
 const ACTUAL_COLORS = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C'] // reds
 const PREDICTED_COLORS = ['#08306B', '#08519C', '#2171B5', '#4292C6', '#6BAED6'] // blues
 
-// NEW: color-blind friendly palettes (dark -> light)
-const CB_PREDICTED_COLORS = ['#440154','#3b528b','#21918c','#5ec962','#fde725']; // viridis(5)
-const CB_ACTUAL_COLORS     = ['#000004','#2c115f','#721f81','#f1605d','#fcffa4']; // inferno(5)
+// CB-friendly family A: Viridis (future) / Inferno (observed)
+const CB_A_PREDICTED = ['#440154','#3b528b','#21918c','#5ec962','#fde725']; // Viridis(5)
+const CB_A_ACTUAL    = ['#000004','#2c115f','#721f81','#f1605d','#fcffa4']; // Inferno(5)
+
+// CB-friendly family B: Cividis (future) / Plasma (observed)
+const CB_B_PREDICTED = ['#00204c','#2c4f73','#576d83','#a1a77d','#fdea45']; // Cividis(5)
+const CB_B_ACTUAL    = ['#0d0887','#6a00a8','#b12a90','#e16462','#f0f921']; // Plasma(5)
 
 function currentPalette() {
   const predicted = selectedYear.value > LAST_ACTUAL_YEAR
-  if (colorBlindMode.value) {
-    return predicted ? CB_PREDICTED_COLORS : CB_ACTUAL_COLORS
+  if (!colorBlindMode.value) {
+    return predicted ? PREDICTED_COLORS : ACTUAL_COLORS
   }
-  return predicted ? PREDICTED_COLORS : ACTUAL_COLORS
+  // CB mode on → Familie wählen
+  if (useAltCB.value) {
+    return predicted ? CB_B_PREDICTED : CB_B_ACTUAL   // Cividis/Plasma
+  } else {
+    return predicted ? CB_A_PREDICTED : CB_A_ACTUAL   // Viridis/Inferno
+  }
 }
+
 
 const colorRanges = ref([])
 
@@ -517,6 +542,7 @@ async function refreshMap() {
 onMounted(async () => {
   // load persisted color-blind preference
   try { colorBlindMode.value = localStorage.getItem('cbMode') === '1' } catch {}
+  try { useAltCB.value      = localStorage.getItem('cbAlt')  === '1' } catch {}
   try {
     map = L.map('map').setView([20, 0], 2)
     L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
@@ -529,9 +555,8 @@ onMounted(async () => {
 })
 
 // persist preference
-watch(colorBlindMode, v => {
-  try { localStorage.setItem('cbMode', v ? '1' : '0') } catch {}
-})
+watch(colorBlindMode, v => { try { localStorage.setItem('cbMode', v ? '1' : '0') } catch {} })
+watch(useAltCB,      v => { try { localStorage.setItem('cbAlt',  v ? '1' : '0') } catch {} })
 </script>
 
 <style scoped>
