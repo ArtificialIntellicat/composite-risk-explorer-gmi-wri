@@ -137,7 +137,7 @@
             :tabindex="colorBlindMode ? 0 : -1"
             @click="if(colorBlindMode){ useAltCB = !useAltCB; refreshMap() }"
             class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 blue-400"
             :class="useAltCB ? 'red-400' : 'purple-400'">
             <span class="sr-only">Toggle color scale family</span>
             <span
