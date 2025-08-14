@@ -16,7 +16,10 @@ createInertiaApp({
     resolvePageComponent(
       `./pages/${name}.vue`,
       import.meta.glob<DefineComponent>([
-        './pages/**/*.vue',
+        './pages/explorer/**/*.vue',
+        './pages/Welcome.vue',
+        './pages/Dashboard.vue',
+
       ])
     ),
 
@@ -30,5 +33,4 @@ createInertiaApp({
   progress: { color: '#4B5563' },
 });
 
-// Light/dark theme on load
 initializeTheme();

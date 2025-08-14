@@ -4,6 +4,7 @@ import { renderToString } from 'vue/server-renderer';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createSSRApp, h } from 'vue';
 import type { DefineComponent } from 'vue';
+import { ZiggyVue } from 'ziggy-js';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -13,18 +14,22 @@ createServer(
       page,
       render: renderToString,
       title: (title) => (title ? `${title} - ${appName}` : appName),
-
       resolve: (name) =>
         resolvePageComponent(
           `./pages/${name}.vue`,
           import.meta.glob<DefineComponent>([
-            './pages/**/*.vue',
+            './pages/explorer/**/*.vue',
+            './pages/Welcome.vue',
+            './pages/Dashboard.vue',
           ])
         ),
-
       setup: ({ App, props, plugin }) =>
         createSSRApp({ render: () => h(App, props) })
           .use(plugin)
+          .use(ZiggyVue, {
+            ...(page.props as any).ziggy,
+            location: new URL((page.props as any).ziggy.location),
+          }),
     }),
   { cluster: true }
 );
